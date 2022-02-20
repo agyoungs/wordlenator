@@ -1,3 +1,5 @@
+import discord
+import os
 from wordle_interface import WordleInterface
 from wordfreq import iter_wordlist
 import re
@@ -31,7 +33,7 @@ class WordleBot:
   
   def update_regex(self, word, results):
     self._present_letters = ''
-    for i, letter, result in zip(range(5), word, results):
+    for i, letter, result in zip(range(6), word, results):
       if result == WordleInterface.CORRECT: # force a match for this letter at this position
         self._word_regex[i] = letter
       elif result == WordleInterface.PRESENT: # remove this letter from this position and add it as a requirment
@@ -50,18 +52,20 @@ class WordleBot:
       word = self.get_next_common_word()
       results = self._wordle_interface.guess_word(word)
 
-      # check if we won
-      if all(result == WordleInterface.CORRECT for result in results):
-        break
-
       while WordleInterface.TBD in results: # assume this is not a valid word
         self._wordle_words.remove(word)
         self._wordle_interface.clear_row()
         word = self.get_next_common_word()
         results = self._wordle_interface.guess_word(word)
 
+      # check if we won
+      if all(result == WordleInterface.CORRECT for result in results):
+        break
+
       self.update_regex(word, results)
     
+    self._wordle_interface.close()
+
     # check if we won
     if all(result == WordleInterface.CORRECT for result in results):
       return word

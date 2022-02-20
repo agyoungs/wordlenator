@@ -1,9 +1,11 @@
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from pyshadow.main import Shadow
 import time
+import os
 
 class WordleInterface:
   CORRECT = 2
@@ -12,7 +14,22 @@ class WordleInterface:
   TBD = -1
 
   def __init__(self):
-    self._driver = webdriver.Firefox()
+    #firefox_options = Options()
+    #firefox_options.add_argument('--headless')
+    #self._driver = webdriver.Firefox(firefox_options=firefox_options)
+    #self._driver = webdriver.Firefox()
+    #fireFoxOptions = webdriver.FirefoxOptions()
+    #fireFoxOptions.set_headless()
+    #self._driver = webdriver.Firefox(firefox_options=fireFoxOptions)
+    options = Options()
+    options.headless = True
+    self._driver = webdriver.Firefox(options=options)
+
+    #chrome_options = Options()  
+    #chrome_options.add_argument("--headless")  
+    ##chrome_options.binary_location = '/Applications/Google Chrome   Canary.app/Contents/MacOS/Google Chrome Canary'  
+    #self._driver = webdriver.Chrome(chrome_options=chrome_options)
+
     self._driver.get("https://www.nytimes.com/games/wordle/index.html")
     self._driver.implicitly_wait(15)
     self._shadow = Shadow(self._driver)
