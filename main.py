@@ -1,9 +1,22 @@
 import discord
 import os
 from wordle_interface import WordleInterface
+from repl_server import server
 from wordfreq import iter_wordlist
 import re
 import string
+
+client = discord.Client()
+    
+@client.event
+async def on_ready():
+  print("Mwahahah")
+
+@client.event
+async def on_message(message):
+  print("message")
+  return
+server = server()
 
 class WordleBot:
   def __init__(self):
@@ -30,7 +43,7 @@ class WordleBot:
       candidates = list(filter(r.match, candidates))
     print(candidates[:150])
     return candidates[0]
-  
+
   def update_regex(self, word, results):
     self._present_letters = ''
     for i, letter, result in zip(range(6), word, results):
@@ -63,16 +76,20 @@ class WordleBot:
         break
 
       self.update_regex(word, results)
-    
+
+    share_results = self._wordle_interface.get_share_results()
     self._wordle_interface.close()
 
     # check if we won
     if all(result == WordleInterface.CORRECT for result in results):
-      return word
+      return word, share_results
     else:
-      return None
+      return None, share_results
 
 if __name__ == "__main__":
+  client.run(os.environ['TOKEN'])
+  
   wb = WordleBot()
-  result = wb.solve_wordle()
-  print(result)
+  word, share_results = wb.solve_wordle()
+  print(word)
+  print(share_results)

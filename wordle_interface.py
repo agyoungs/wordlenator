@@ -1,9 +1,10 @@
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 from pyshadow.main import Shadow
+import clipboard
 import time
 import os
 
@@ -14,21 +15,11 @@ class WordleInterface:
   TBD = -1
 
   def __init__(self):
-    #firefox_options = Options()
-    #firefox_options.add_argument('--headless')
-    #self._driver = webdriver.Firefox(firefox_options=firefox_options)
-    #self._driver = webdriver.Firefox()
-    #fireFoxOptions = webdriver.FirefoxOptions()
-    #fireFoxOptions.set_headless()
-    #self._driver = webdriver.Firefox(firefox_options=fireFoxOptions)
-    options = Options()
-    options.headless = True
-    self._driver = webdriver.Firefox(options=options)
-
-    #chrome_options = Options()  
-    #chrome_options.add_argument("--headless")  
-    ##chrome_options.binary_location = '/Applications/Google Chrome   Canary.app/Contents/MacOS/Google Chrome Canary'  
-    #self._driver = webdriver.Chrome(chrome_options=chrome_options)
+    chrome_options = Options()
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.headless = True
+    self._driver = webdriver.Chrome(options=chrome_options)
 
     self._driver.get("https://www.nytimes.com/games/wordle/index.html")
     self._driver.implicitly_wait(15)
@@ -78,8 +69,6 @@ class WordleInterface:
     time.sleep(5) # todo: I'm sure there's a much better way to handle this
     return self.check_word()
 
-
-if __name__ == "__main__":
-  wi = WordleInterface()
-  wi.guess_word('alone')
-  wi.guess_word('sails')
+  def get_share_results(self):
+    self._shadow.find_element('button#share-button').click()
+    return clipboard.paste()
